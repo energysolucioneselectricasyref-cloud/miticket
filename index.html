@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Venta</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; padding: 10px; font-size: 14px; }
+        .text-center { text-align: center; }
+        .bold { font-weight: bold; }
+        .divider { border-top: 1px dashed #000; margin: 10px 0; }
+        .flex-space { display: flex; justify-content: space-between; margin: 5px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="text-center">
+        <h2 style="margin: 5px 0;">ENERGY SOLUCIONES</h2>
+        <p style="margin: 2px 0;">Eléctricas y Refrigeración</p>
+        <div class="divider"></div>
+        <p class="bold">TICKET DE VENTA</p>
+    </div>
+
+    <!-- Lista de artículos dinámicos -->
+    <div id="articulos">
+        <!-- Los productos de AppSheet se cargarán aquí -->
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Valores Totales dinámicos -->
+    <div class="flex-space bold">
+        <span>TOTAL:</span>
+        <span id="val-total">$0.00</span>
+    </div>
+    <div class="flex-space">
+        <span>EFECTIVO:</span>
+        <span id="val-efectivo">$0.00</span>
+    </div>
+    <div class="flex-space">
+        <span>DEVUELTAS:</span>
+        <span id="val-devueltas">$0.00</span>
+    </div>
+
+    <div class="divider"></div>
+    <p class="text-center bold">¡GRACIAS POR SU COMPRA!</p>
+
+    <script>
+        // Este script lee automáticamente los datos que le envía AppSheet por la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if(urlParams.has('total')) document.getElementById('val-total').innerText = '$' + urlParams.get('total');
+        if(urlParams.has('efectivo')) document.getElementById('val-efectivo').innerText = '$' + urlParams.get('efectivo');
+        if(urlParams.has('devueltas')) document.getElementById('val-devueltas').innerText = '$' + urlParams.get('devueltas');
+    </script>
+</body>
+</html>
