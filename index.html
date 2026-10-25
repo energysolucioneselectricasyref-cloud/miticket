@@ -5,53 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket de Venta</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; padding: 10px; font-size: 14px; }
+        body { font-family: 'Courier New', Courier, monospace; width: 280px; margin: 0 auto; padding: 5px; font-size: 12px; color: #000; }
         .text-center { text-align: center; }
+        .text-right { text-align: right; }
         .bold { font-weight: bold; }
-        .divider { border-top: 1px dashed #000; margin: 10px 0; }
-        .flex-space { display: flex; justify-content: space-between; margin: 5px 0; }
+        .divider { border-top: 1px dashed #000; margin: 8px 0; }
+        .flex-space { display: flex; justify-content: space-between; margin: 3px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 12px; }
+        th, td { text-align: left; padding: 2px 0; vertical-align: top; }
+        .col-cant { width: 15%; }
+        .col-desc { width: 55%; }
+        .col-total { width: 30%; text-align: right; }
     </style>
 </head>
 <body>
 
     <div class="text-center">
-        <h2 style="margin: 5px 0;">ENERGY SOLUCIONES</h2>
-        <p style="margin: 2px 0;">Eléctricas y Refrigeración</p>
+        <h2 style="margin: 3px 0; font-size: 16px;">ENERGY SOLUCIONES</h2>
+        <p style="margin: 1px 0;">Eléctricas y Refrigeración</p>
         <div class="divider"></div>
-        <p class="bold">TICKET DE VENTA</p>
-    </div>
-
-    <!-- Lista de artículos dinámicos -->
-    <div id="articulos">
-        <!-- Los productos de AppSheet se cargarán aquí -->
+        <p class="bold" style="margin: 2px 0;">TICKET: <span id="lbl-boleta">0000</span></p>
+        <p style="margin: 2px 0;">Fecha: <span id="lbl-fecha">-</span> <span id="lbl-hora">-</span></p>
+        <p style="margin: 2px 0;">Cliente/Mesa: <span id="lbl-mesa">-</span></p>
+        <div id="div-direccion" style="display:none;"><p style="margin: 2px 0;">Dir: <span id="lbl-direccion">-</span></p></div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Valores Totales dinámicos -->
-    <div class="flex-space bold">
-        <span>TOTAL:</span>
-        <span id="val-total">$0.00</span>
+    <!-- Tabla de Artículos -->
+    <table>
+        <thead>
+            <tr class="bold">
+                <th class="col-cant">Cant</th>
+                <th class="col-desc">Descripción</th>
+                <th class="col-total">Total</th>
+            </tr>
+        </thead>
+        <tbody id="lista-articulos">
+            <!-- Los productos se generan dinámicamente aquí -->
+        </tbody>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- Totales -->
+    <div class="flex-space" id="div-domi" style="display:none;">
+        <span>Costo Domicilio:</span>
+        <span id="lbl-domi">$0.00</span>
     </div>
+    <div class="flex-space" id="div-propina" style="display:none;">
+        <span>Propina:</span>
+        <span id="lbl-propina">$0.00</span>
+    </div>
+    <div class="flex-space bold" style="font-size: 14px;">
+        <span>TOTAL:</span>
+        <span id="lbl-total">$0.00</span>
+    </div>
+    
+    <div class="divider"></div>
+    
     <div class="flex-space">
         <span>EFECTIVO:</span>
-        <span id="val-efectivo">$0.00</span>
+        <span id="lbl-efectivo">$0.00</span>
     </div>
     <div class="flex-space">
         <span>DEVUELTAS:</span>
-        <span id="val-devueltas">$0.00</span>
+        <span id="lbl-devueltas">$0.00</span>
+    </div>
+    
+    <div class="divider"></div>
+    <div class="text-center">
+        <p style="margin: 2px 0;">Estado: <span id="lbl-estado" class="bold">-</span></p>
+        <p class="bold" style="margin: 8px 0 2px 0;">¡GRACIAS POR SU COMPRA!</p>
     </div>
 
-    <div class="divider"></div>
-    <p class="text-center bold">¡GRACIAS POR SU COMPRA!</p>
-
     <script>
-        // Este script lee automáticamente los datos que le envía AppSheet por la URL
+        // Capturar los parámetros de la URL enviados por AppSheet
         const urlParams = new URLSearchParams(window.location.search);
         
-        if(urlParams.has('total')) document.getElementById('val-total').innerText = '$' + urlParams.get('total');
-        if(urlParams.has('efectivo')) document.getElementById('val-efectivo').innerText = '$' + urlParams.get('efectivo');
-        if(urlParams.has('devueltas')) document.getElementById('val-devueltas').innerText = '$' + urlParams.get('devueltas');
+        // Textos de encabezados y estados
+        document.getElementById('lbl-boleta').innerText = urlParams.get('boleta') || '-';
+        document.getElementById('lbl-mesa').innerText = urlParams.get('mesa') || '-';
+        document.getElementById('lbl-fecha').innerText = urlParams.get('fecha') || '-';
+        document.getElementById('lbl-hora').innerText = urlParams.get('fecha_entrega') || '-';
+        document.getElementById('lbl-estado').innerText = urlParams.get('estado') || '-';
+
+        // Manejo de dirección si existe
+        if (urlParams.get('direccion')) {
+            document.getElementById('div-direccion').style.display = 'block';
+            document.getElementById('lbl-direccion').innerText = decodeURIComponent(urlParams.get('direccion'));
+        }
+
+        // Procesar listas dinámicas de productos (Cantidades, Servicios y Precios)
+        const cantidades = urlParams.get('cantidades') ? urlParams.get('cantidades').split(',') : [];
+        const servicios = urlParams.get('servicios') ? urlParams.get('servicios').split(',') : [];
+        const precios = urlParams.get('p_unit') ? urlParams.get('p_unit').split(',') : [];
+
+        const tabla = document.getElementById('lista-articulos');
+
+        // Recorrer las listas y construir las filas del ticket
+        for (let i = 0; i < servicios.length; i++) {
+            const cant = parseFloat(cantidades[i]) || 1;
+            const desc = servicios[i] ? servicios[i].trim() : 'Articulo';
+            const precio = parseFloat(precios[i]) || 0;
+            const subtotal = cant * precio;
+
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td class="col-cant">${cant}</td>
+                <td class="col-desc">${desc}</td>
+                <td class="col-total">$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 0})}</td>
+            `;
+            tabla.appendChild(fila);
+        }
+
+        // Formatear valores monetarios finales
+        const formatMoney = (val) => val ? '$' + parseFloat(val).toLocaleString('es-CO', {minimumFractionDigits: 0}) : '$0';
+
+        document.getElementById('lbl-total').innerText = formatMoney(urlParams.get('total'));
+        document.getElementById('lbl-efectivo').innerText = formatMoney(urlParams.get('descuento')); // Tu campo 'descuento' mapea a Efectivo Recibido
+        document.getElementById('lbl-devueltas').innerText = formatMoney(urlParams.get('subtotal_desc')); // Tu campo 'subtotal_desc' mapea a Devueltas
+
+        // Mostrar Domicilio si aplica
+        if (urlParams.get('domi') && parseFloat(urlParams.get('domi')) > 0) {
+            document.getElementById('div-domi').style.display = 'flex';
+            document.getElementById('lbl-domi').innerText = formatMoney(urlParams.get('domi'));
+        }
+        // Mostrar Propina si aplica
+        if (urlParams.get('propina') && parseFloat(urlParams.get('propina')) > 0) {
+            document.getElementById('div-propina').style.display = 'flex';
+            document.getElementById('lbl-propina').innerText = formatMoney(urlParams.get('propina'));
+        }
     </script>
 </body>
 </html>
