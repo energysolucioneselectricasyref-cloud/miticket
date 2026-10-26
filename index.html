@@ -78,7 +78,45 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const formatMoney = (val) => val ? '$' + parseFloat(val).toLocaleString('es-CO', {minimumFractionDigits: 0}) : '$0';
+        
+        // CORRECCIÓN: Forzamos a que siempre se muestren obligatoriamente los 2 decimales (.00)
+        const formatMoney = (val) => {
+            if (val === undefined || val === null || val === '') return '$0.00';
+            const numero = parseFloat(val);
+            return isNaN(numero) ? '$0.00' : '$' + numero.toLocaleString('es-CO', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
+        // Función interna para limpiar las entradas de texto de precios provenientes de AppSheet
+        const parseAppSheetPrice = (str) => {
+            if (!str) return 0;
+            let limpio = str.trim().replace('$', '');
+            
+            // Si el formato viene con puntos de miles y coma decimal (ej: 126.000,00)
+            if (limpio.includes('.') && limpio.includes(',')) {
+                limpio = limpio.replace(/\./g, '').replace(',', '.');
+            } 
+            // Si viene con formato americano común en base de datos (ej: 126,000.00)
+            else if (limpio.includes(',') && limpio.includes('.')) {
+                limpio = limpio.replace(/,/g, '');
+            }
+            // Si contiene un único punto y tres dígitos finales, asumimos separador de miles colombiano (ej: 126.000)
+            else if (limpio.includes('.') && limpio.split('.').pop().length === 3) {
+                limpio = limpio.replace(/\./g, '');
+            }
+            // Si contiene una única coma y tres dígitos finales (ej: 126,000)
+            else if (limpio.includes(',') && limpio.split(',').pop().length === 3) {
+                limpio = limpio.replace(/,/g, '');
+            }
+            // Si tiene una coma como decimal simple (ej: 126,00)
+            else if (limpio.includes(',')) {
+                limpio = limpio.replace(',', '.');
+            }
+
+            return parseFloat(limpio) || 0;
+        };
 
         // 1. Mapear Datos del Comprobante
         document.getElementById('val-tipo-doc').innerText = urlParams.get('tipo_doc') || '-';
@@ -104,17 +142,8 @@
             const cant = parseFloat(cantidades[i]) || 1;
             const desc = servicios[i] ? decodeURIComponent(servicios[i]) : 'Artículo/Servicio';
             
-            let textoPrecio = precios[i] || '0';
-            
-            // Si el precio viene con decimales de centavos (.00), quitamos los dos últimos ceros y el punto/coma
-            if (textoPrecio.endsWith('.00') || textoPrecio.endsWith(',00')) {
-                textoPrecio = textoPrecio.slice(0, -3);
-            }
-
-            // Removemos todos los puntos de miles, signos de peso o espacios
-            const precioLimpio = textoPrecio.replace(/\D/g, ''); 
-            
-            const precio = parseFloat(precioLimpio) || 0;
+            // Procesamos el precio unitario con la nueva función de parseo seguro
+            const precio = parseAppSheetPrice(precios[i]);
             const subtotalLinea = cant * precio;
 
             const bloque = document.createElement('div');
@@ -128,14 +157,14 @@
             contenedor.appendChild(bloque);
         }
 
-        // 4. Mapear Totales y Resumen
-        document.getElementById('val-subtotal').innerText = formatMoney(urlParams.get('subtotal_desc'));
-        document.getElementById('val-iva').innerText = formatMoney(urlParams.get('iva'));
-        document.getElementById('val-desc').innerText = formatMoney(urlParams.get('descuento_val'));
-        document.getElementById('val-total-sd').innerText = formatMoney(urlParams.get('total_sd'));
-        document.getElementById('val-total-gen').innerText = formatMoney(urlParams.get('total'));
-        document.getElementById('val-abonado').innerText = formatMoney(urlParams.get('efectivo'));
-        document.getElementById('val-saldo-p').innerText = formatMoney(urlParams.get('saldo_pendiente'));
+        // 4. Mapear Totales y Resumen procesados con los dos decimales obligatorios
+        document.getElementById('val-subtotal').innerText = formatMoney(parseAppSheetPrice(urlParams.get('subtotal_desc')));
+        document.getElementById('val-iva').innerText = formatMoney(parseAppSheetPrice(urlParams.get('iva')));
+        document.getElementById('val-desc').innerText = formatMoney(parseAppSheetPrice(urlParams.get('descuento_val')));
+        document.getElementById('val-total-sd').innerText = formatMoney(parseAppSheetPrice(urlParams.get('total_sd')));
+        document.getElementById('val-total-gen').innerText = formatMoney(parseAppSheetPrice(urlParams.get('total')));
+        document.getElementById('val-abonado').innerText = formatMoney(parseAppSheetPrice(urlParams.get('efectivo')));
+        document.getElementById('val-saldo-p').innerText = formatMoney(parseAppSheetPrice(urlParams.get('saldo_pendiente')));
 
         // 5. Cargar Código de Barras Dinámico (URL de imagen)
         const barcodeUrl = urlParams.get('barcode');
