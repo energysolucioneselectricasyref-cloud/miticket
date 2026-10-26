@@ -93,23 +93,23 @@
         document.getElementById('val-cli-tel').innerText = urlParams.get('cli_tel') || '-';
         document.getElementById('val-cli-dir').innerText = urlParams.get('direccion') || '-';
 
-                // 3. Procesar Tabla de Artículos Completa
-        // Se añade .split(',') y un .map() para limpiar de forma segura espacios fantasmas de AppSheet
+                        // 3. Procesar Tabla de Artículos Completa
         const cantidades = urlParams.get('cantidades') ? urlParams.get('cantidades').split(',').map(x => x.trim()) : [];
         const servicios = urlParams.get('servicios') ? urlParams.get('servicios').split(',').map(x => x.trim()) : [];
         const precios = urlParams.get('p_unit') ? urlParams.get('p_unit').split(',').map(x => x.trim()) : [];
 
         const contenedor = document.getElementById('contenedor-articulos');
 
-        // Determinamos el largo real usando la lista de servicios como referencia
         for (let i = 0; i < servicios.length; i++) {
             const cant = parseFloat(cantidades[i]) || 1;
             const desc = servicios[i] ? decodeURIComponent(servicios[i]) : 'Artículo/Servicio';
             
-            // Reemplazamos cualquier punto decimal interno si AppSheet envía separadores de miles cruzados
-            const precioLimpio = precios[i] ? precios[i].replace(/[^\d.]/g, '') : '0';
-            const precio = parseFloat(precioLimpio) || 0;
+            // CORRECCIÓN: Quitamos los puntos de miles (.) y dejamos solo números limpios
+            let precioLimpio = precios[i] ? precios[i].replace(/\./g, '') : '0'; 
+            // Si el precio trae comas de decimales (ej: ,00), las cambiamos por punto decimal
+            precioLimpio = precioLimpio.replace(/,/g, '.');
             
+            const precio = parseFloat(precioLimpio) || 0;
             const subtotalLinea = cant * precio;
 
             const bloque = document.createElement('div');
