@@ -118,13 +118,13 @@
         }
 
         // 4. Mapear Totales y Resumen
-        document.getElementById('val-subtotal').innerText = formatMoney(urlParams.get('subtotal_desc'));
-        document.getElementById('val-iva').innerText = formatMoney(urlParams.get('iva'));
-        document.getElementById('val-desc').innerText = formatMoney(urlParams.get('descuento_val'));
-        document.getElementById('val-total-sd').innerText = formatMoney(urlParams.get('total_sd'));
-        document.getElementById('val-total-gen').innerText = formatMoney(urlParams.get('total'));
-        document.getElementById('val-abonado').innerText = formatMoney(urlParams.get('efectivo'));
-        document.getElementById('val-saldo-p').innerText = formatMoney(urlParams.get('devueltas'));
+document.getElementById('val-subtotal').innerText = formatMoney(urlParams.get('subtotal_desc'));
+document.getElementById('val-iva').innerText = formatMoney(urlParams.get('iva'));
+document.getElementById('val-desc').innerText = formatMoney(urlParams.get('descuento_val'));
+document.getElementById('val-total-sd').innerText = formatMoney(urlParams.get('total_sd'));
+document.getElementById('val-total-gen').innerText = formatMoney(urlParams.get('total'));
+document.getElementById('val-abonado').innerText = formatMoney(urlParams.get('efectivo'));
+document.getElementById('val-saldo-p').innerText = formatMoney(urlParams.get('saldo_pendiente'));
 
         // 5. Cargar Código de Barras Dinámico (URL de imagen)
         const barcodeUrl = urlParams.get('barcode');
