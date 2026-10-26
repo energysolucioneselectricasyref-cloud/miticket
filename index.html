@@ -16,13 +16,22 @@
         .col-cant { width: 15%; }
         .col-desc { width: 55%; }
         .col-total { width: 30%; text-align: right; }
+        .logo-container { text-align: center; margin-bottom: 5px; }
+        .logo-container img { max-width: 100px; height: auto; object-fit: contain; }
     </style>
 </head>
 <body>
 
+    <!-- Contenedor del Logo de la Empresa -->
+    <div class="logo-container">
+        <img src="https://githubusercontent.com" alt="Logo">
+    </div>
+
     <div class="text-center">
         <h2 style="margin: 3px 0; font-size: 16px;">ENERGY SOLUCIONES</h2>
         <p style="margin: 1px 0;">Eléctricas y Refrigeración</p>
+        <p style="margin: 1px 0; font-weight: bold;">NIT: 1073977725-0</p>
+        <p style="margin: 1px 0;">Tel: +57 3242432439</p>
         <div class="divider"></div>
         <p class="bold" style="margin: 2px 0;">TICKET: <span id="lbl-boleta">0000</span></p>
         <p style="margin: 2px 0;">Fecha: <span id="lbl-fecha">-</span> <span id="lbl-hora">-</span></p>
@@ -123,8 +132,8 @@
         const formatMoney = (val) => val ? '$' + parseFloat(val).toLocaleString('es-CO', {minimumFractionDigits: 0}) : '$0';
 
         document.getElementById('lbl-total').innerText = formatMoney(urlParams.get('total'));
-        document.getElementById('lbl-efectivo').innerText = formatMoney(urlParams.get('descuento')); // Tu campo 'descuento' mapea a Efectivo Recibido
-        document.getElementById('lbl-devueltas').innerText = formatMoney(urlParams.get('subtotal_desc')); // Tu campo 'subtotal_desc' mapea a Devueltas
+        document.getElementById('lbl-efectivo').innerText = formatMoney(urlParams.get('descuento')); 
+        document.getElementById('lbl-devueltas').innerText = formatMoney(urlParams.get('subtotal_desc')); 
 
         // Mostrar Domicilio si aplica
         if (urlParams.get('domi') && parseFloat(urlParams.get('domi')) > 0) {
