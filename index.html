@@ -93,7 +93,7 @@
         document.getElementById('val-cli-tel').innerText = urlParams.get('cli_tel') || '-';
         document.getElementById('val-cli-dir').innerText = urlParams.get('direccion') || '-';
 
-                        // 3. Procesar Tabla de Artículos Completa
+        // 3. Procesar Tabla de Artículos Completa
         const cantidades = urlParams.get('cantidades') ? urlParams.get('cantidades').split(',').map(x => x.trim()) : [];
         const servicios = urlParams.get('servicios') ? urlParams.get('servicios').split(',').map(x => x.trim()) : [];
         const precios = urlParams.get('p_unit') ? urlParams.get('p_unit').split(',').map(x => x.trim()) : [];
@@ -104,10 +104,21 @@
             const cant = parseFloat(cantidades[i]) || 1;
             const desc = servicios[i] ? decodeURIComponent(servicios[i]) : 'Artículo/Servicio';
             
-            // CORRECCIÓN: Quitamos los puntos de miles (.) y dejamos solo números limpios
-            let precioLimpio = precios[i] ? precios[i].replace(/\./g, '') : '0'; 
-            // Si el precio trae comas de decimales (ej: ,00), las cambiamos por punto decimal
-            precioLimpio = precioLimpio.replace(/,/g, '.');
+            // SOLUCCIÓN RADICAL: Extrae SOLO los números ignorando signos $, puntos o espacios ocultos
+            let textoPrecio = precios[i] || '0';
+            
+            // Si el precio viene con decimales reales al final (ej: .00 o ,00), quitamos esa parte decimal
+            if (textoPrecio.includes(',') && textoPrecio.lastIndexOf(',') > textoPrecio.lastIndexOf('.')) {
+                textoPrecio = textoPrecio.substring(0, textoPrecio.lastIndexOf(','));
+            } else if (textoPrecio.includes('.') && textoPrecio.lastIndexOf('.') > textoPrecio.lastIndexOf(',')) {
+                // Si el punto final separa centavos (y no miles), lo removemos junto a sus decimales
+                if (textoPrecio.split('.').pop().length === 2 || textoPrecio.split('.').pop().length === 1) {
+                    textoPrecio = textoPrecio.substring(0, textoPrecio.lastIndexOf('.'));
+                }
+            }
+
+            // Remueve absolutamente todo lo que NO sea un número puro
+            const precioLimpio = textoPrecio.replace(/\D/g, ''); 
             
             const precio = parseFloat(precioLimpio) || 0;
             const subtotalLinea = cant * precio;
