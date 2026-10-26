@@ -3,147 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket de Venta</title>
+    <title>Comprobante de Venta</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; width: 280px; margin: 0 auto; padding: 5px; font-size: 12px; color: #000; }
+        body { font-family: 'Courier New', Courier, monospace; width: 310px; margin: 0 auto; padding: 5px; font-size: 11px; color: #000; line-height: 1.2; }
         .text-center { text-align: center; }
-        .text-right { text-align: right; }
         .bold { font-weight: bold; }
-        .divider { border-top: 1px dashed #000; margin: 8px 0; }
-        .flex-space { display: flex; justify-content: space-between; margin: 3px 0; }
-        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 12px; }
-        th, td { text-align: left; padding: 2px 0; vertical-align: top; }
-        .col-cant { width: 15%; }
-        .col-desc { width: 55%; }
-        .col-total { width: 30%; text-align: right; }
+        .divider { border-top: 1px dashed #000; margin: 6px 0; }
+        .flex-space { display: flex; justify-content: space-between; margin: 2px 0; white-space: pre; }
+        .item-block { margin-bottom: 5px; }
         .logo-container { text-align: center; margin-bottom: 5px; }
-        .logo-container img { max-width: 100px; height: auto; object-fit: contain; }
+        .logo-container img { max-width: 80px; height: auto; }
+        .bc-container { text-align: center; margin: 10px 0; }
+        .bc-container img { max-width: 180px; height: auto; }
     </style>
 </head>
 <body>
 
-    <!-- Contenedor del Logo de la Empresa -->
     <div class="logo-container">
         <img src="logo.png" onerror="this.src='logo.PNG'; this.onerror=function(){this.src='logo.jpg';};" alt="Logo">
     </div>
 
     <div class="text-center">
-        <h2 style="margin: 3px 0; font-size: 16px;">ENERGY SOLUCIONES</h2>
-        <p style="margin: 1px 0;">Eléctricas y Refrigeración</p>
-        <p style="margin: 1px 0; font-weight: bold;">NIT: 1073977725-0</p>
-        <p style="margin: 1px 0;">Tel: +57 3242432439</p>
-        <div class="divider"></div>
-        <p class="bold" style="margin: 2px 0;">TICKET: <span id="lbl-boleta">0000</span></p>
-        <p style="margin: 2px 0;">Fecha: <span id="lbl-fecha">-</span> <span id="lbl-hora">-</span></p>
-        <p style="margin: 2px 0;">Cliente/Mesa: <span id="lbl-mesa">-</span></p>
-        <div id="div-direccion" style="display:none;"><p style="margin: 2px 0;">Dir: <span id="lbl-direccion">-</span></p></div>
+        <span class="bold">⚡ ENERGY SOLUCIONES ELÉCTRICAS Y REFRIGERACIÓN ⚡</span><br>
+        NIT: 1073977725-0<br>
+        Dirección comercial: Carrera 47 #13-48 E2, Barrio San José<br>
+        Teléfono de contacto: 3242432439<br>
+        Tierralta, Córdoba
     </div>
 
     <div class="divider"></div>
-
-    <!-- Tabla de Artículos -->
-    <table>
-        <thead>
-            <tr class="bold">
-                <th class="col-cant">Cant</th>
-                <th class="col-desc">Descripción</th>
-                <th class="col-total">Total</th>
-            </tr>
-        </thead>
-        <tbody id="lista-articulos">
-            <!-- Los productos se generan dinámicamente aquí -->
-        </tbody>
-    </table>
+    <div class="text-center bold">DATOS DEL COMPROBANTE</div>
+    <div class="divider"></div>
+    <div>Tipo de Documento: <span id="val-tipo-doc">-</span></div>
+    <div>Número correlativo: N° <span id="val-num-doc">-</span></div>
+    <div>Fecha de Emisión: <span id="val-fecha">-</span></div>
+    <div>Estado: <span id="val-estado">-</span></div>
+    <div>Método de Pago: <span id="val-metodo-pago">-</span></div>
 
     <div class="divider"></div>
+    <div class="text-center bold">INFORMACIÓN DEL CLIENTE</div>
+    <div class="divider"></div>
+    <div>Cliente / Empresa: <span id="val-cli-nombre">-</span></div>
+    <div>Identificación: <span id="val-cli-id">-</span></div>
+    <div>Teléfono: <span id="val-cli-tel">-</span></div>
+    <div>Dirección de entrega: <span id="val-cli-dir">-</span></div>
 
-    <!-- Totales -->
-    <div class="flex-space" id="div-domi" style="display:none;">
-        <span>Costo Domicilio:</span>
-        <span id="lbl-domi">$0.00</span>
-    </div>
-    <div class="flex-space" id="div-propina" style="display:none;">
-        <span>Propina:</span>
-        <span id="lbl-propina">$0.00</span>
-    </div>
-    <div class="flex-space bold" style="font-size: 14px;">
-        <span>TOTAL:</span>
-        <span id="lbl-total">$0.00</span>
-    </div>
-    
+    <div class="divider"></div>
+    <div class="text-center bold">DETALLE DE LOS TRABAJOS / MATERIALES</div>
     <div class="divider"></div>
     
-    <div class="flex-space">
-        <span>EFECTIVO:</span>
-        <span id="lbl-efectivo">$0.00</span>
-    </div>
-    <div class="flex-space">
-        <span>DEVUELTAS:</span>
-        <span id="lbl-devueltas">$0.00</span>
+    <!-- Contenedor dinámico de artículos -->
+    <div id="contenedor-articulos"></div>
+
+    <div class="text-center bold">RESUMEN DE CUENTA</div>
+    <div class="divider"></div>
+    <div class="flex-space">Subtotal Neto:        <span id="val-subtotal">$0</span></div>
+    <div class="flex-space">IVA Aplicado:         <span id="val-iva">$0</span></div>
+    <div class="flex-space">Descuento:           <span id="val-desc">$0</span></div>
+    <div class="flex-space">Total sin descuento:<span id="val-total-sd">$0</span></div>
+    <div class="flex-space bold">TOTAL GENERAL:        <span id="val-total-gen">$0</span></div>
+    <br>
+    <div class="flex-space">Monto Abonado:        <span id="val-abonado">$0</span></div>
+    <div class="flex-space bold">SALDO PENDIENTE:      <span id="val-saldo-p">$0</span></div>
+
+    <div class="divider"></div>
+    <!-- Contenedor del Código de Barras -->
+    <div class="bc-container" id="div-barcode" style="display:none;">
+        <img id="img-barcode" src="" alt="Código de Barras">
     </div>
     
-    <div class="divider"></div>
-    <div class="text-center">
-        <p style="margin: 2px 0;">Estado: <span id="lbl-estado" class="bold">-</span></p>
-        <p class="bold" style="margin: 8px 0 2px 0;">¡GRACIAS POR SU COMPRA!</p>
+    <div class="text-center bold" style="margin-top: 8px;">
+        Gracias por confiar en nuestros servicios profesionales de climatización y electricidad.
     </div>
 
     <script>
-        // Capturar los parámetros de la URL enviados por AppSheet
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Textos de encabezados y estados
-        document.getElementById('lbl-boleta').innerText = urlParams.get('boleta') || '-';
-        document.getElementById('lbl-mesa').innerText = urlParams.get('mesa') || '-';
-        document.getElementById('lbl-fecha').innerText = urlParams.get('fecha') || '-';
-        document.getElementById('lbl-hora').innerText = urlParams.get('fecha_entrega') || '-';
-        document.getElementById('lbl-estado').innerText = urlParams.get('estado') || '-';
+        const formatMoney = (val) => val ? '$' + parseFloat(val).toLocaleString('es-CO', {minimumFractionDigits: 0}) : '$0';
 
-        // Manejo de dirección si existe
-        if (urlParams.get('direccion')) {
-            document.getElementById('div-direccion').style.display = 'block';
-            document.getElementById('lbl-direccion').innerText = decodeURIComponent(urlParams.get('direccion'));
-        }
+        // 1. Mapear Datos del Comprobante
+        document.getElementById('val-tipo-doc').innerText = urlParams.get('tipo_doc') || '-';
+        document.getElementById('val-num-doc').innerText = urlParams.get('boleta') || '-';
+        document.getElementById('val-fecha').innerText = urlParams.get('fecha') || '-';
+        document.getElementById('val-estado').innerText = urlParams.get('estado') || '-';
+        document.getElementById('val-metodo-pago').innerText = urlParams.get('metodo_pago') || '-';
 
-        // Procesar listas dinámicas de productos (Cantidades, Servicios y Precios)
+        // 2. Mapear Datos del Cliente
+        document.getElementById('val-cli-nombre').innerText = urlParams.get('mesa') || '-';
+        document.getElementById('val-cli-id').innerText = urlParams.get('cli_id') || '-';
+        document.getElementById('val-cli-tel').innerText = urlParams.get('cli_tel') || '-';
+        document.getElementById('val-cli-dir').innerText = urlParams.get('direccion') || '-';
+
+        // 3. Procesar Tabla de Artículos Completa
         const cantidades = urlParams.get('cantidades') ? urlParams.get('cantidades').split(',') : [];
         const servicios = urlParams.get('servicios') ? urlParams.get('servicios').split(',') : [];
         const precios = urlParams.get('p_unit') ? urlParams.get('p_unit').split(',') : [];
 
-        const tabla = document.getElementById('lista-articulos');
+        const contenedor = document.getElementById('contenedor-articulos');
 
-        // Recorrer las listas y construir las filas del ticket
         for (let i = 0; i < servicios.length; i++) {
             const cant = parseFloat(cantidades[i]) || 1;
-            const desc = servicios[i] ? servicios[i].trim() : 'Articulo';
+            const desc = servicios[i] ? decodeURIComponent(servicios[i]).trim() : 'Artículo/Servicio';
             const precio = parseFloat(precios[i]) || 0;
-            const subtotal = cant * precio;
+            const subtotalLinea = cant * precio;
 
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td class="col-cant">${cant}</td>
-                <td class="col-desc">${desc}</td>
-                <td class="col-total">$${subtotal.toLocaleString('es-CO', {minimumFractionDigits: 0})}</td>
+            const bloque = document.createElement('div');
+            bloque.className = 'item-block';
+            bloque.innerHTML = `
+                <div>Descripción del Ítem: <span class="bold">${desc}</span></div>
+                <div>Cantidad solicitada: ${cant}  |  Precio Unitario: ${formatMoney(precio)}</div>
+                <div>Subtotal de Línea: ${formatMoney(subtotalLinea)}</div>
+                <div class="divider"></div>
             `;
-            tabla.appendChild(fila);
+            contenedor.appendChild(bloque);
         }
 
-        // Formatear valores monetarios finales
-        const formatMoney = (val) => val ? '$' + parseFloat(val).toLocaleString('es-CO', {minimumFractionDigits: 0}) : '$0';
+        // 4. Mapear Totales y Resumen
+        document.getElementById('val-subtotal').innerText = formatMoney(urlParams.get('subtotal_desc'));
+        document.getElementById('val-iva').innerText = formatMoney(urlParams.get('iva'));
+        document.getElementById('val-desc').innerText = formatMoney(urlParams.get('descuento_val'));
+        document.getElementById('val-total-sd').innerText = formatMoney(urlParams.get('total_sd'));
+        document.getElementById('val-total-gen').innerText = formatMoney(urlParams.get('total'));
+        document.getElementById('val-abonado').innerText = formatMoney(urlParams.get('efectivo'));
+        document.getElementById('val-saldo-p').innerText = formatMoney(urlParams.get('devueltas'));
 
-        document.getElementById('lbl-total').innerText = formatMoney(urlParams.get('total'));
-        document.getElementById('lbl-efectivo').innerText = formatMoney(urlParams.get('descuento')); 
-        document.getElementById('lbl-devueltas').innerText = formatMoney(urlParams.get('subtotal_desc')); 
-
-        // Mostrar Domicilio si aplica
-        if (urlParams.get('domi') && parseFloat(urlParams.get('domi')) > 0) {
-            document.getElementById('div-domi').style.display = 'flex';
-            document.getElementById('lbl-domi').innerText = formatMoney(urlParams.get('domi'));
-        }
-        // Mostrar Propina si aplica
-        if (urlParams.get('propina') && parseFloat(urlParams.get('propina')) > 0) {
-            document.getElementById('div-propina').style.display = 'flex';
-            document.getElementById('lbl-propina').innerText = formatMoney(urlParams.get('propina'));
+        // 5. Cargar Código de Barras Dinámico (URL de imagen)
+        const barcodeUrl = urlParams.get('barcode');
+        if (barcodeUrl && barcodeUrl.trim() !== '') {
+            document.getElementById('div-barcode').style.display = 'block';
+            document.getElementById('img-barcode').src = decodeURIComponent(barcodeUrl);
         }
     </script>
 </body>
