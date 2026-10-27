@@ -157,20 +157,20 @@
             contenedor.appendChild(bloque);
         }
 
-        // 4. Mapear Totales y Resumen procesados con los dos decimales obligatorios
-        document.getElementById('val-subtotal').innerText = formatMoney(parseAppSheetPrice(urlParams.get('subtotal_desc')));
+        // 4. Mapear Totales y Resumen del Comprobante
+        document.getElementById('val-subtotal').innerText = formatMoney(parseAppSheetPrice(urlParams.get('subtotal')));
         document.getElementById('val-iva').innerText = formatMoney(parseAppSheetPrice(urlParams.get('iva')));
-        document.getElementById('val-desc').innerText = formatMoney(parseAppSheetPrice(urlParams.get('descuento_val')));
-        document.getElementById('val-total-sd').innerText = formatMoney(parseAppSheetPrice(urlParams.get('total_sd')));
+        document.getElementById('val-desc').innerText = formatMoney(parseAppSheetPrice(urlParams.get('descuento')));
+        document.getElementById('val-total-sd').innerText = formatMoney(parseAppSheetPrice(urlParams.get('total_sin_desc')));
         document.getElementById('val-total-gen').innerText = formatMoney(parseAppSheetPrice(urlParams.get('total')));
-        document.getElementById('val-abonado').innerText = formatMoney(parseAppSheetPrice(urlParams.get('efectivo')));
-        document.getElementById('val-saldo-p').innerText = formatMoney(parseAppSheetPrice(urlParams.get('saldo_pendiente')));
+        document.getElementById('val-abonado').innerText = formatMoney(parseAppSheetPrice(urlParams.get('abonado')));
+        document.getElementById('val-saldo-p').innerText = formatMoney(parseAppSheetPrice(urlParams.get('saldo')));
 
-        // 5. Cargar Código de Barras Dinámico (URL de imagen)
-        const barcodeUrl = urlParams.get('barcode');
-        if (barcodeUrl && barcodeUrl.trim() !== '') {
+        // 5. Mapear Código de Barras (Si se envía en la URL)
+        const barcodeParam = urlParams.get('barcode');
+        if (barcodeParam) {
             document.getElementById('div-barcode').style.display = 'block';
-            document.getElementById('img-barcode').src = decodeURIComponent(barcodeUrl);
+            document.getElementById('img-barcode').src = barcodeParam;
         }
     </script>
 </body>
